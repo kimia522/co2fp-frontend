@@ -1,0 +1,26 @@
+stages:
+  - build
+
+build_and_push_frontend_image:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+
+  variables:
+    # no need to disable TLS
+    DOCKER_TLS_CERTDIR: ""
+
+  script:
+    - docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_TOKEN"
+    - docker build -t omidi/kimia-frontend:latest ./ -f ./Dockerfile
+    - docker push omidi/kimia-frontend:latest
+
+  only:
+    refs:
+      - 12
+
+
+  before_script:
+    - echo "Starting build and push process..."
+
